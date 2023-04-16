@@ -41,7 +41,7 @@
     </div>
     {% endif %}
     <div class="mt-5 text-center mb-3">
-        <h1>Informacion del usuario: {{ usuarioInfo.first_name }} {{ usuarioInfo.last_name }}</h1>
+        <h3>Informacion del usuario: {{ usuarioInfo.first_name }} {{ usuarioInfo.last_name }}</h3>
     </div>
     <div class="container">
         <div class="row justify-content-between">
@@ -98,12 +98,12 @@
         </div>
     </div>
     <div class="mt-5 text-center mb-3">
-        <h3>Tareas del usuario</h3>
+        <h2>Productos de la tienda</h2>
     </div>
     <div class="container mt-5">
         <div class="row justify-content-between">
             <div class="col-2 text-start">
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#nuevaTarea"><i class="fa-solid fa-calendar-plus"></i>Nueva Tarea</button>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#nuevoProducto"><i class="fa-solid fa-calendar-plus"></i>Nuevo Producto</button>
             </div>
             <div class="col-2 text-end">
                 <a class="btn btn-success" href="#"><i class="fa-solid fa-download"></i>Descargar</a>
@@ -115,22 +115,28 @@
             <div class="col-8">
                 <table class="table table-bordered">
                     <thead class="table-dark">
-                        <th>Fecha de inicio</th>
-                        <th>Fecha de fin</th>
-                        <th>Estado de tarea</th>
-                        <th>Informacion de tarea</th>
-                        <th>Finalizar tarea</th>
-                        <th>Eliminar tarea</th>
+                        <th>Nombre de producto</th>
+                        <th>Codigo de producto</th>
+                        <th>Precio de compra</th>
+                        <th>Precio de venta</th>
+                        <th>Usuario que lo agrego</th>
+                        {% if user.datosusuario.RolUsuario == 'ADMINISTRADOR' %}
+                        <th>Eliminar producto</th>
+                        {% endif %}
                     </thead>
                     <tbody>
-                        {% for tarea in tareasUsuario %}
+                        {% for producto in productosUsuario %}
                         <tr>
-                            <td>{{ tarea.fechaInicio|date:'d-m-Y'}}</td>
-                            <td>{{ tarea.fechaFin|date:'d-m-Y'}}</td>
-                            <td>{{ tarea.estadoTarea}}</td>
-                            <td><a class="btn btn-info" href="#"><i class="fa-solid fa-eye"></i></a></td>
-                            <td><a class="btn btn-warning" href="#"><i class="fa-solid fa-forward-step"></i></a></td>
-                            <td><a class="btn btn-danger" href="#"><i class="fa-solid fa-trash"></i></a></td>
+                            <td>{{ producto.NombreProducto }}</td>
+                            <td>{{ producto.Codigo }}</td>
+                            <td>{{ producto.PrecioCompra}}</td>
+                            <td>{{ producto.PrecioVenta}}</td>
+                            <td>{{ producto.Usuario.datosusuario.Nombre}}</td>
+                            {% if user.datosusuario.RolUsuario == 'ADMINISTRADOR' %}
+                            <td><a href="{% url 'gestion_tienda:eliminarProducto' producto.id%}" class="btn btn-danger">
+                                <i class="fa-solid fa-trash"></i>
+                            </a></td>
+                            {% endif %}
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -140,34 +146,40 @@
     </div>
 </body>
 </html>
-<!--Nueva tarea-->
+<!--Nuevo producto-->
 <!--Ventana modal-->
-<div class="modal fade" id="nuevaTarea" data-bs-backdrop="static" data-bs-keyboard="false" >
+<div class="modal fade" id="nuevoProducto" data-bs-backdrop="static" data-bs-keyboard="false" >
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form method="post" action="{% url 'gestion_tienda:nuevaTarea' usuarioInfo.id %}">
+            <form method="post" action="{% url 'gestion_tienda:nuevoProducto' usuarioInfo.id %}">
             {% csrf_token %}
                 <div class="modal-header">
-                    <h5 class="modal-title">Crear nueva tarea</h5>
+                    <h5 class="modal-title">Crear nuevo producto</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row form-group justify-content-around mb-3">
                         <div class="col-5">
-                            <label>Fecha de inicio</label>
-                            <input class="form-control" type="date" required name="fechaInicio">
+                            <label>Nombre de producto</label>
+                            <input class="form-control" type="text" required name="NombreProducto">
                         </div>
                     </div>
                     <div class="row form-group justify-content-around mb-3">
                         <div class="col-5">
-                            <label>Fecha de finalizacion</label>
-                            <input class="form-control" type="date" required name="fechaFin">
+                            <label>Codigo de producto</label>
+                            <input class="form-control" type="text" required name="Codigo">
                         </div>
                     </div>
                     <div class="row form-group justify-content-around mb-3">
-                        <div class="col-11">
-                            <lable>Descripcion de la tarea</lable>
-                            <textarea class="form-control" type="text" required name="descripcionTarea" rows="4"></textarea>
+                        <div class="col-5">
+                            <lable>Precio de compra</lable>
+                            <input class="form-control" type="float" required name="PrecioCompra">
+                        </div>
+                    </div>
+                    <div class="row form-group justify-content-around mb-3">
+                        <div class="col-5">
+                            <lable>Precio de venta</lable>
+                            <input class="form-control" type="float" required name="PrecioVenta">
                         </div>
                     </div>
                 </div>

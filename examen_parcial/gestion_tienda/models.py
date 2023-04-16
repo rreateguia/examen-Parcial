@@ -18,7 +18,7 @@ class Producto(models.Model):
     Codigo=models.CharField(default='CODIGO',max_length=30)
     PrecioCompra=models.FloatField(default=0.00)
     PrecioVenta=models.FloatField(default=0.00)
-    Usuario=models.ForeignKey(datosUsuario,on_delete=models.CASCADE)
+    Usuario=models.ForeignKey(User,on_delete=models.CASCADE)
 
 class tareasInformacion(models.Model):
     usuarioRelacionado=models.ForeignKey(User,on_delete=models.CASCADE)

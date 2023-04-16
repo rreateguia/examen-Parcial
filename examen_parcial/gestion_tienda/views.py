@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .models import datosUsuario,tareasInformacion
+from .models import datosUsuario,tareasInformacion,Producto
 from datetime import date
 import datetime
 def index(request):
@@ -66,31 +66,34 @@ def eliminarUsuario(request,ind):
     usuarioEliminar = User.objects.get(id=ind)
     datosUsuario.objects.get(user=usuarioEliminar).delete()
     usuarioEliminar.delete()
-    return HttpResponseRedirect(reverse('gestion_tienda:gestionUsuario'))
+    return HttpResponseRedirect(reverse('gestion_tienda:gestionUsuarios'))
+def eliminarProducto(request,ind):
+    productoEliminar = Producto.objects.get(id=ind)
+    productoEliminar.delete()
+    print('Producto eliminado')
+    return HttpResponseRedirect(reverse('gestion_tienda:verUsuario',kwargs={'ind':request.user.id}))
 def verUsuario(request, ind):
-    usuarioInfo=User.objects.get(id=ind)
-    tareasUsuario=tareasInformacion.objects.filter(usuarioRelacionado=usuarioInfo).order_by('id')
-    return render(request,'informacionUsuario.html',{
-        'usuarioInfo' : usuarioInfo,
-        'tareasUsuario': tareasUsuario,
-    })
-def nuevaTarea(request,ind):
+    if ((request.user.datosusuario.RolUsuario!='ADMINISTRADOR') and (request.user.id!=int(ind))):
+       return HttpResponseRedirect(reverse('gestion_tienda:verUsuario',kwargs={'ind':request.user.id}))
+    else:
+        usuarioInfo=User.objects.get(id=ind)
+        productosUsuario=Producto.objects.all()
+        return render(request,'informacionUsuario.html',{
+            'usuarioInfo' : usuarioInfo,
+            'productosUsuario': productosUsuario,
+        })
+def nuevoProducto(request,ind):
     if request.method=='POST':
         usuarioRelacionado=User.objects.get(id=ind)
-        fechaInicio=request.POST.get('fechaInicio')
-        fechaFin=request.POST.get('fechaFin')
-        descripcionTarea=request.POST.get('descripcionTarea')
-        fechaSeparada= fechaInicio.split('-')
-        ini_dia=int(fechaSeparada[2])
-        ini_mes=int(fechaSeparada[1])
-        ini_ano=int(fechaSeparada[0])
-        fechaSeparada= fechaFin.split('-')
-        fin_dia=int(fechaSeparada[2])
-        fin_mes=int(fechaSeparada[1])
-        fin_ano=int(fechaSeparada[0])
-        fechaInicioRegistro=datetime.datetime(ini_ano,ini_mes,ini_dia)
-        fechaFinRegistro=datetime.datetime(fin_ano,fin_mes,fin_dia)
-        tareasInformacion.objects.create(
-            fechaInicio=fechaInicioRegistro,fechaFin=fechaFinRegistro,usuarioRelacionado=usuarioRelacionado,descripcionTarea=descripcionTarea
+        nombreProducto=request.POST.get('NombreProducto')
+        codigo=request.POST.get('Codigo')
+        precioCompra=request.POST.get('PrecioCompra')
+        precioVenta=request.POST.get('PrecioVenta')
+        Producto.objects.create(
+            NombreProducto=nombreProducto,
+            Codigo=codigo,
+            Usuario=usuarioRelacionado,
+            PrecioCompra=precioCompra,
+            PrecioVenta=precioVenta,
         )
         return HttpResponseRedirect(reverse('gestion_tienda:verUsuario',kwargs={'ind':ind}))
