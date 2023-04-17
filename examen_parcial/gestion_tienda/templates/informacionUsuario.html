@@ -7,10 +7,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <title>Gestion de productos</title>
+    <title>Gestion de usuarios</title>
 </head>
 <body>
-    <div class="bg-primary">
+    <div class="bg-dark">
         <div class="container">
             <div class="row justify-content-between align-items-center">
                 <div class="col-4 mt-3 mb-3 text-white">
@@ -21,6 +21,14 @@
                         <h5>{{ user.datosusuario.RolUsuario}}</h5>
                     </div>
                 </div>
+                {% if user.datosusuario.RolUsuario == 'ADMINISTRADOR' %}
+                <div class="col">
+                    <a class="btn btn-info" href="{% url 'gestion_tienda:gestionUsuarios' %}">Gestion de usuarios</a>
+                </div>
+                {% endif %}
+                <div class="col">
+                    <a class="btn btn-info" href="{% url 'gestion_tienda:gestionProductos' %}">Gestion de productos</a>
+                </div>
                 <div class="col-1">
                     <a class="btn btn-success" href="{% url 'gestion_tienda:cerrarSesion' %}">
                        <i class="fa-solid fa-right-to-bracket"></i>Salir
@@ -30,7 +38,7 @@
         </div>
     </div>
     <div class="mt-5 text-center">
-        <h1>Gestion de productos</h1>
+        <h1>Gestion de usuarios</h1>
     </div>
     {% if user.datosusuario.RolUsuario == 'ADMINISTRADOR' %}
     <div class="container mt-3 mb-3">
@@ -97,97 +105,4 @@
             </div>
         </div>
     </div>
-    <div class="mt-5 text-center mb-3">
-        <h2>Productos de la tienda</h2>
-    </div>
-    <div class="container mt-5">
-        <div class="row justify-content-between">
-            <div class="col-2 text-start">
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#nuevoProducto"><i class="fa-solid fa-calendar-plus"></i>Nuevo Producto</button>
-            </div>
-            <div class="col-2 text-end">
-                <a class="btn btn-success" href="#"><i class="fa-solid fa-download"></i>Descargar</a>
-            </div>
-        </div>
-    </div>
-    <div class="mt-5 container">
-        <div class="row justify-content-center">
-            <div class="col-8">
-                <table class="table table-bordered">
-                    <thead class="table-dark">
-                        <th>Nombre de producto</th>
-                        <th>Codigo de producto</th>
-                        <th>Precio de compra</th>
-                        <th>Precio de venta</th>
-                        <th>Usuario que lo agrego</th>
-                        {% if user.datosusuario.RolUsuario == 'ADMINISTRADOR' %}
-                        <th>Eliminar producto</th>
-                        {% endif %}
-                    </thead>
-                    <tbody>
-                        {% for producto in productosUsuario %}
-                        <tr>
-                            <td>{{ producto.NombreProducto }}</td>
-                            <td>{{ producto.Codigo }}</td>
-                            <td>{{ producto.PrecioCompra}}</td>
-                            <td>{{ producto.PrecioVenta}}</td>
-                            <td>{{ producto.Usuario.datosusuario.Nombre}}</td>
-                            {% if user.datosusuario.RolUsuario == 'ADMINISTRADOR' %}
-                            <td><a href="{% url 'gestion_tienda:eliminarProducto' producto.id%}" class="btn btn-danger">
-                                <i class="fa-solid fa-trash"></i>
-                            </a></td>
-                            {% endif %}
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
-<!--Nuevo producto-->
-<!--Ventana modal-->
-<div class="modal fade" id="nuevoProducto" data-bs-backdrop="static" data-bs-keyboard="false" >
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form method="post" action="{% url 'gestion_tienda:nuevoProducto' usuarioInfo.id %}">
-            {% csrf_token %}
-                <div class="modal-header">
-                    <h5 class="modal-title">Crear nuevo producto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row form-group justify-content-around mb-3">
-                        <div class="col-5">
-                            <label>Nombre de producto</label>
-                            <input class="form-control" type="text" required name="NombreProducto">
-                        </div>
-                    </div>
-                    <div class="row form-group justify-content-around mb-3">
-                        <div class="col-5">
-                            <label>Codigo de producto</label>
-                            <input class="form-control" type="text" required name="Codigo">
-                        </div>
-                    </div>
-                    <div class="row form-group justify-content-around mb-3">
-                        <div class="col-5">
-                            <lable>Precio de compra</lable>
-                            <input class="form-control" type="float" required name="PrecioCompra">
-                        </div>
-                    </div>
-                    <div class="row form-group justify-content-around mb-3">
-                        <div class="col-5">
-                            <lable>Precio de venta</lable>
-                            <input class="form-control" type="float" required name="PrecioVenta">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Registrar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+    

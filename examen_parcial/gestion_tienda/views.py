@@ -17,7 +17,7 @@ def index(request):
             if usuarioInfo.datosusuario.RolUsuario=='ADMINISTRADOR':
                 return HttpResponseRedirect(reverse('gestion_tienda:gestionUsuarios'))
             else:
-                return HttpResponseRedirect(reverse('gestion_tienda:verUsuario',kwargs={'ind':usuarioInfo.id}))
+                return HttpResponseRedirect(reverse('gestion_tienda:gestionProductos'))
         else:
             return HttpResponseRedirect(reverse('gestion_tienda:index'))
     return render(request,'ingresoUsuario.html')
@@ -61,7 +61,13 @@ def gestionUsuarios(request):
         'usuariosTotales':User.objects.all().order_by('id')           
         })
     else:
-        return HttpResponseRedirect(reverse('gestion_tienda:verUsuario',kwargs={'ind':request.user.id}))
+        return HttpResponseRedirect(reverse('gestion_tienda:gestionProductos'))
+def gestionProductos(request):
+    #usuarioInfo=request.user
+    productosUsuario=Producto.objects.all()
+    return render(request,'gestionProductos.html',{
+        'productosUsuario': productosUsuario
+    })
 def eliminarUsuario(request,ind):
     usuarioEliminar = User.objects.get(id=ind)
     datosUsuario.objects.get(user=usuarioEliminar).delete()
@@ -71,20 +77,20 @@ def eliminarProducto(request,ind):
     productoEliminar = Producto.objects.get(id=ind)
     productoEliminar.delete()
     print('Producto eliminado')
-    return HttpResponseRedirect(reverse('gestion_tienda:verUsuario',kwargs={'ind':request.user.id}))
+    return HttpResponseRedirect(reverse('gestion_tienda:gestionProductos'))
 def verUsuario(request, ind):
-    if ((request.user.datosusuario.RolUsuario!='ADMINISTRADOR') and (request.user.id!=int(ind))):
-       return HttpResponseRedirect(reverse('gestion_tienda:verUsuario',kwargs={'ind':request.user.id}))
-    else:
+    if (request.user.datosusuario.RolUsuario=='ADMINISTRADOR'):
         usuarioInfo=User.objects.get(id=ind)
-        productosUsuario=Producto.objects.all()
+        #productosUsuario=Producto.objects.all()
         return render(request,'informacionUsuario.html',{
             'usuarioInfo' : usuarioInfo,
-            'productosUsuario': productosUsuario,
+            #'productosUsuario': productosUsuario,
         })
-def nuevoProducto(request,ind):
+    else:
+        return HttpResponseRedirect(reverse('gestion_tienda:gestionProductos'))
+def nuevoProducto(request):
     if request.method=='POST':
-        usuarioRelacionado=User.objects.get(id=ind)
+        usuarioRelacionado=request.user
         nombreProducto=request.POST.get('NombreProducto')
         codigo=request.POST.get('Codigo')
         precioCompra=request.POST.get('PrecioCompra')
@@ -96,4 +102,4 @@ def nuevoProducto(request,ind):
             PrecioCompra=precioCompra,
             PrecioVenta=precioVenta,
         )
-        return HttpResponseRedirect(reverse('gestion_tienda:verUsuario',kwargs={'ind':ind}))
+        return HttpResponseRedirect(reverse('gestion_tienda:gestionProductos'))

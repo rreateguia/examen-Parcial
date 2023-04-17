@@ -10,7 +10,7 @@
     <title>Gestion de usuarios</title>
 </head>
 <body>
-    <div class="bg-primary">
+    <div class="bg-dark">
         <div class="container">
             <div class="row justify-content-between align-items-center">
                 <div class="col-4 mt-3 mb-3 text-white">
@@ -20,6 +20,14 @@
                     <div class="row">
                         <h5>{{ user.datosusuario.RolUsuario}}</h5>
                     </div>
+                </div>
+                {% if user.datosusuario.RolUsuario == 'ADMINISTRADOR' %}
+                <div class="col">
+                    <a class="btn btn-info" href="{% url 'gestion_tienda:gestionUsuarios' %}">Gestion de usuarios</a>
+                </div>
+                {% endif %}
+                <div class="col">
+                    <a class="btn btn-info" href="{% url 'gestion_tienda:gestionProductos' %}">Gestion de productos</a>
                 </div>
                 <div class="col-1">
                     <a class="btn btn-success" href="{% url 'gestion_tienda:cerrarSesion' %}">
@@ -37,14 +45,10 @@
             <div class="col-2">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#nuevoUsuario">
                     <i class="fa-solid fa-user-plus"></i>
+                    Crear usuario
                 </button>
             </div>
-            <div class="col-2">
-                <a class="btn btn-success" href="#">
-                    <i class="fa-solid fa-download"></i>
-                    Descargar
-                </a>
-            </div>
+
         </div>
     </div>
     <div class="mt-5 container">
